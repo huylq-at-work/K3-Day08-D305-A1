@@ -31,7 +31,10 @@ def setup_directory():
     DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 
-# TODO: Điền danh sách URL bài viết cần crawl
+# ⚠️ Chỉ có 4 URL DUY NHẤT — mục cuối trùng với mục thứ 4, nên `data/landing/news/`
+# đủ 5 file (qua test Task 2) nhưng corpus thật chỉ có 4 bài. Task 3 phát hiện trùng
+# theo hash nội dung và bỏ bản sao, nên chỉ 4 bài được index.
+# Muốn đủ 5 bài thật thì thay dòng cuối bằng một URL khác rồi chạy lại Task 2 → 3 → 4.
 ARTICLE_URLS = [
     "https://www.rmit.edu.vn/vi/su-kien/hoi-thao-thong-tin/ug",
     "https://www.rmit.edu.vn/vi/su-kien/tat-ca-cac-su-kien/2026/rmit-tech-camp",

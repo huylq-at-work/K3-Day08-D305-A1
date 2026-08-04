@@ -29,7 +29,16 @@ openai>=1.30.0
 streamlit>=1.35.0
 
 # Group project - Evaluation
-ragas>=0.1.21
+# Nhom dung DeepEval thay vi RAGAS. Ly do: ragas==0.1.21 keo numpy<2, ma numpy doi cu
+# khong co wheel cho Python 3.14 nen pip phai build tu source va can Visual C++ Build
+# Tools. Ban ragas moi hon thi keo scikit-network, cung phai build bang C. DeepEval la
+# pure-python, cai duoc ngay. Bai lab cho phep ca 3 framework (DeepEval/RAGAS/TruLens).
+deepeval>=3.0.0
+
+# DeepEval cache doc/ghi file co khoa chia se; tren Windows thieu goi nay se loi
+# "AttributeError: 'NoneType' object has no attribute 'test_cases_lookup_map'".
+pywin32>=306; sys_platform == "win32"
+
 datasets>=2.14.0
 langchain-openai>=0.1.0
 

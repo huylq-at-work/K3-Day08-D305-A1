@@ -1,17 +1,92 @@
 [
   {
-    "question": "Học phí hàng năm của chương trình Business tại RMIT Vietnam là bao nhiêu?",
-    "expected_answer": "Khoảng 375.840.000 VND mỗi năm (tùy chương trình cụ thể).",
-    "expected_context": "Trang Tuition Fees, mục Undergraduate Programs"
+    "question": "What are the Saigon South campus library opening hours during semester?",
+    "expected_answer": "Monday to Friday 8am - 9pm, Saturday and Sunday 8am - 5pm.",
+    "expected_context": "library_hours-and-locations-rmit.md — mục Saigon South campus / During semester"
   },
   {
-    "question": "Học phí được thanh toán theo hình thức nào?",
-    "expected_answer": "Thanh toán theo từng học kỳ, tính theo từng môn học đã đăng ký.",
-    "expected_context": "Trang Tuition Fees, mục Payment Structure"
+    "question": "Thư viện cơ sở Nam Sài Gòn mở cửa mấy giờ trong kỳ học?",
+    "expected_answer": "Thứ Hai đến thứ Sáu từ 8 giờ sáng đến 9 giờ tối; thứ Bảy và Chủ nhật từ 8 giờ sáng đến 5 giờ chiều.",
+    "expected_context": "library_hours-and-locations-rmit.md — mục Saigon South campus / During semester"
   },
   {
-    "question": "Trường có cung cấp ký túc xá trong khuôn viên không?",
-    "expected_answer": "Không — trường không cung cấp chỗ ở trong khuôn viên, nhưng có đội ngũ hỗ trợ sinh viên tìm chỗ ở gần trường.",
-    "expected_context": "Trang Accommodation Services"
+    "question": "What are the library hours during exam time?",
+    "expected_answer": "During exam time (weeks 10 to 12) the library opens Monday to Sunday, 8am - 9pm.",
+    "expected_context": "library_hours-and-locations-rmit.md — mục Exam Time (week 10 - 12)"
+  },
+  {
+    "question": "Is the RMIT library open during semester break weekends?",
+    "expected_answer": "No. During semester break the library opens Monday to Friday 8am - 5pm and is closed on weekends.",
+    "expected_context": "library_hours-and-locations-rmit.md — mục Semester break"
+  },
+  {
+    "question": "Is the library open on public holidays?",
+    "expected_answer": "No, the library is closed on public holidays.",
+    "expected_context": "library_hours-and-locations-rmit.md"
+  },
+  {
+    "question": "Where is the Saigon South campus library located?",
+    "expected_answer": "Level 3, Beanland Building, RMIT Saigon South campus, 702 Nguyen Van Linh boulevard, Tan Hung ward, Ho Chi Minh city.",
+    "expected_context": "library_hours-and-locations-rmit.md — mục locations"
+  },
+  {
+    "question": "Thư viện cơ sở Hà Nội nằm ở đâu?",
+    "expected_answer": "Tầng 2, toà nhà Handi Resco, cơ sở Hà Nội.",
+    "expected_context": "library_hours-and-locations-rmit.md — mục Hanoi campus"
+  },
+  {
+    "question": "RMIT Việt Nam trao học bổng tổng trị giá bao nhiêu trong năm 2025?",
+    "expected_answer": "47,5 tỉ đồng.",
+    "expected_context": "news_hoc-bong-rmit-47-5-ty-2025.md — tiêu đề bài viết"
+  },
+  {
+    "question": "Có bao nhiêu sinh viên được vinh danh tại lễ trao học bổng RMIT năm 2025?",
+    "expected_answer": "102 sinh viên xuất sắc trong nước và quốc tế.",
+    "expected_context": "news_hoc-bong-rmit-47-5-ty-2025.md"
+  },
+  {
+    "question": "Các suất học bổng ngoài học bổng toàn phần của RMIT có giá trị bao nhiêu phần trăm học phí?",
+    "expected_answer": "Từ 25% đến 50% học phí.",
+    "expected_context": "news_hoc-bong-rmit-47-5-ty-2025.md"
+  },
+  {
+    "question": "Kể từ khi thành lập, RMIT Việt Nam đã trao bao nhiêu suất học bổng?",
+    "expected_answer": "Hơn 1.900 suất học bổng, với tổng trị giá hơn 613 tỉ đồng, kể từ năm 2000.",
+    "expected_context": "news_hoc-bong-rmit-47-5-ty-2025.md"
+  },
+  {
+    "question": "Học bổng Chắp cánh ước mơ bao gồm những quyền lợi gì?",
+    "expected_answer": "Bao gồm học phí chương trình tiếng Anh và chương trình đại học, sinh hoạt phí hàng tháng, một máy tính xách tay và các hỗ trợ khác.",
+    "expected_context": "news_hoc-bong-rmit-47-5-ty-2025.md"
+  },
+  {
+    "question": "What is a tuition fee scholarship at RMIT Vietnam?",
+    "expected_answer": "A full or partial reduction of the tuition fees of an RMIT Vietnam program of study.",
+    "expected_context": "scholarship-terms-and-conditions-rmit.md — mục 1"
+  },
+  {
+    "question": "Liên hệ với bộ phận học bổng của RMIT Việt Nam bằng cách nào?",
+    "expected_answer": "Qua email scholarships@rmit.edu.vn hoặc website https://www.rmit.edu.vn/scholarships; địa chỉ thư là Scholarship Office, RMIT University Vietnam - Saigon South Campus.",
+    "expected_context": "scholarship-terms-and-conditions-rmit.md — mục liên hệ"
+  },
+  {
+    "question": "What happens if an enrolment variation form is not submitted by the deadline?",
+    "expected_answer": "The student remains liable for all fees if the authorised form is not submitted via the RMIT Connect Portal or the school/college office by the deadline.",
+    "expected_context": "enrolment-variation-form-rmit.md"
+  },
+  {
+    "question": "Giờ làm việc của RMIT Student Connect là khi nào?",
+    "expected_answer": "Thứ Hai đến thứ Sáu, từ 8.30 sáng đến 5.30 chiều (GMT+7).",
+    "expected_context": "enrolment-variation-form-rmit.md — mục thông tin liên hệ"
+  },
+  {
+    "question": "Hạn chót nộp đơn đăng ký RMIT Tech Camp 2026 là khi nào?",
+    "expected_answer": "5 giờ chiều ngày 06/06/2026.",
+    "expected_context": "event_rmit-tech-camp-2026.md — bảng lịch trình"
+  },
+  {
+    "question": "Tổng giá trị giải thưởng của RMIT Tech Camp 2026 là bao nhiêu?",
+    "expected_answer": "10 giải thưởng cho mỗi cơ sở (Hà Nội và Nam Sài Gòn), tổng giá trị lên đến hơn 65.000.000 VND.",
+    "expected_context": "event_rmit-tech-camp-2026.md"
   }
 ]

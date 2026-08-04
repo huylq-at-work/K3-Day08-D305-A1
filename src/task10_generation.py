@@ -41,15 +41,14 @@ TOP_P = 0.9
 # Chọn 0.3 vì: RAG cần factual, ít sáng tạo
 TEMPERATURE = 0.3
 
-# TODO: Chọn LLM model (OpenRouter model ID)
-# TODO: Chọn LLM model (OpenRouter model ID)
-# Use inclusionai model with free tier; fallback to other APIs on rate limit
-LLM_MODEL = "inclusionai/ling-3.0-flash:free"  # default free model
+# Model mặc định khi dùng OpenRouter: bản ":free" không tính phí.
+LLM_MODEL = "inclusionai/ling-3.0-flash:free"
 
-# Fallback models (if rate limited)
+# Model thay thế khi bị rate limit (429). Đây là model ID CỦA OPENROUTER, không
+# phải fallback sang provider khác — việc chọn provider nằm ở generate_with_citation().
 FALLBACK_MODELS = [
-    "openai/gpt-4o-mini",  # if OpenAI key available
-    "google/gemini-pro",    # if GEMINI_API_KEY available
+    "openai/gpt-4o-mini",
+    "google/gemini-pro",
 ]
 
 
@@ -137,6 +136,57 @@ def format_context(chunks: list[dict]) -> str:
 # GENERATION
 # =============================================================================
 
+# Số lần thử lại khi lỗi mạng thoáng qua.
+LLM_MAX_ATTEMPTS = 3
+_TRANSIENT_MARKERS = ("connection", "timeout", "timed out", "temporarily", "502", "503", "504")
+
+
+def _call_llm(api_key: str, base_url: str | None, model_id: str, user_message: str) -> str:
+    """
+    Gọi LLM, thử lại khi gặp lỗi mạng thoáng qua.
+
+    Không có retry thì một lần rớt mạng sẽ biến thành NỘI DUNG câu trả lời
+    ("LLM generation error: Connection error."). Quan sát thực tế: eval chấm
+    Answer Relevancy = 0.000 cho những câu đó, dù retrieval hoàn toàn đúng —
+    tức là một sự cố mạng thoáng qua làm hỏng cả bảng điểm.
+    """
+    import time
+
+    from openai import OpenAI
+
+    client = OpenAI(api_key=api_key, base_url=base_url)
+    last_exc: Exception | None = None
+
+    for attempt in range(1, LLM_MAX_ATTEMPTS + 1):
+        try:
+            response = client.chat.completions.create(
+                model=model_id,
+                messages=[
+                    {"role": "system", "content": SYSTEM_PROMPT},
+                    {"role": "user", "content": user_message},
+                ],
+                temperature=TEMPERATURE,
+                top_p=TOP_P,
+            )
+            return response.choices[0].message.content or ""
+        except Exception as exc:
+            last_exc = exc
+            message = str(exc).lower()
+
+            # Rate limit để vòng ngoài đổi sang model khác, không retry ở đây.
+            if "429" in message or "rate limit" in message:
+                raise
+
+            if not any(m in message for m in _TRANSIENT_MARKERS):
+                raise
+
+            if attempt < LLM_MAX_ATTEMPTS:
+                wait = 2 ** (attempt - 1)
+                print(f"[WARN] LLM lỗi tạm thời ({exc}); thử lại sau {wait}s")
+                time.sleep(wait)
+
+    raise last_exc if last_exc else RuntimeError("LLM call failed")
+
 def generate_with_citation(
     query: str,
     top_k: int = TOP_K,
@@ -220,18 +270,7 @@ def generate_with_citation(
         answer = ""
         for model_id in models_to_try:
             try:
-                from openai import OpenAI
-                client = OpenAI(api_key=api_key, base_url=base_url)
-                response = client.chat.completions.create(
-                    model=model_id,
-                    messages=[
-                        {"role": "system", "content": SYSTEM_PROMPT},
-                        {"role": "user", "content": user_message},
-                    ],
-                    temperature=TEMPERATURE,
-                    top_p=TOP_P,
-                )
-                answer = response.choices[0].message.content or ""
+                answer = _call_llm(api_key, base_url, model_id, user_message)
                 # Successful generation, break out of fallback loop
                 break
             except Exception as exc:

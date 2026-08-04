@@ -54,10 +54,54 @@ def _html_to_markdown(html: str, md: MarkItDown) -> str:
         stream_info=StreamInfo(extension=".html", mimetype="text/html"),
     )
     text = result.text_content
+    text = _drop_navigation_lines(text)
 
     # Gom dòng trống thừa do menu/nav rỗng để chunk không toàn khoảng trắng.
     text = re.sub(r"\n{3,}", "\n\n", text)
     return text.strip()
+
+
+# Một dòng menu điển hình: "* [Hội nghị ABC](/vi/su-kien/tat-ca-cac-su-kien/2026/...)"
+# — gần như toàn bộ ký tự nằm trong URL, không mang thông tin trả lời được.
+# Cho phép nhiều dấu đầu dòng lồng nhau ("* + [..](..)") — MarkItDown sinh ra
+# dạng này khi menu là <ul> lồng <ul>.
+_LINK_ONLY = re.compile(r"^[\s*+\-]*\[[^\]]*\]\([^)]*\)\s*$")
+_LINK_MARKUP = re.compile(r"\[([^\]]*)\]\([^)]*\)")
+
+
+def _drop_navigation_lines(text: str) -> str:
+    """
+    Bỏ các dòng chỉ chứa link điều hướng.
+
+    Sau khi bóc HTML, menu và sidebar của trang còn lại dưới dạng danh sách link
+    thuần. Chúng trông giống nội dung nên vẫn được index, rồi chiếm suất trong
+    top_k và đẩy đoạn văn thật ra ngoài — quan sát thực tế: 3/5 kết quả cho câu
+    hỏi giờ mở cửa thư viện là menu của trang sự kiện.
+
+    Chỉ bỏ dòng CHỈ có link, hoặc dòng mà phần chữ hiển thị quá ngắn so với độ
+    dài URL. Câu văn bình thường có chèn link vẫn được giữ.
+    """
+    kept = []
+    for line in text.splitlines():
+        stripped = line.strip()
+
+        if not stripped:
+            kept.append(line)
+            continue
+
+        if _LINK_ONLY.match(stripped):
+            continue
+
+        # Dòng nhiều link mà phần chữ ngoài link không đáng kể -> menu.
+        links = _LINK_MARKUP.findall(stripped)
+        if len(links) >= 2:
+            text_outside = _LINK_MARKUP.sub("", stripped).strip(" *+-|·•\t")
+            if len(text_outside) < 20:
+                continue
+
+        kept.append(line)
+
+    return "\n".join(kept)
 
 
 def convert_legal_docs():
@@ -71,7 +115,6 @@ def convert_legal_docs():
     for filepath in legal_dir.iterdir():
         if filepath.suffix.lower() in (".pdf", ".docx", ".doc"):
             print(f"Converting: {filepath.name}")
-            # TODO: Convert và lưu file
             result = md.convert(str(filepath))
             output_path = output_dir / f"{filepath.stem}.md"
             output_path.write_text(result.text_content, encoding="utf-8")

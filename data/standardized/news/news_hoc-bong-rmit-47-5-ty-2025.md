@@ -7,137 +7,13 @@
 
 # RMIT Việt Nam trao học bổng trị giá 47,5 tỉ đồng năm 2025
 
-[SKIP TO CONTENT](#topnav_skipcontent "Skip to content")
-
-* [RMIT Vietnam](/vi/)
-
-  + [RMIT Australia](https://www.rmit.edu.au)
-  + [RMIT Europe](https://www.rmit.eu)
-* [Sinh viên hiện tại](/students)
-* [Cựu sinh viên](/vi/cuu-sinh-vien)
-* [Nhân viên](/vnstaff)
-* [Thư viện](/libraryvn)
 * Tiếng Việt
-
-  + [English](/news/all-news/2025/oct/rmit-vietnam-awards-47-5-billion-vnd-in-2025-scholarships)
 
 Search field
 
-[Tìm kiếm](/vi/search)
-
 Tiếng Việt
 
-* [English](/news/all-news/2025/oct/rmit-vietnam-awards-47-5-billion-vnd-in-2025-scholarships)
-
 Tìm kiếm
-
-[RMIT Vietnam](/vi/)
-
-* [RMIT Australia](https://www.rmit.edu.au)
-* [RMIT Europe](https://www.rmit.eu)
-
-[Sinh viên hiện tại](/students)
-
-[Cựu sinh viên](/vi/cuu-sinh-vien)
-
-[Nhân viên](/vnstaff)
-
-[Thư viện](/libraryvn)
-
-* [Chương trình học](/vi/hoc-tap-tai-rmit)
-
-  + [Chương trình học theo lĩnh vực](/vi/hoc-tap-tai-rmit/chuong-trinh-hoc-theo-linh-vuc)
-  + [Chương trình cử nhân](/vi/hoc-tap-tai-rmit/chuong-trinh-cu-nhan)
-  + [Chương trình Sau đại học](/vi/hoc-tap-tai-rmit/chuong-trinh-sau-dai-hoc)
-  + [Các chương trình chuyển tiếp](/vi/hoc-tap-tai-rmit/cac-chuong-trinh-chuyen-tiep)
-  + [Chương trình Tiếng Anh](/vi/hoc-tap-tai-rmit/chuong-trinh-tieng-anh)
-  + [Sinh viên Quốc tế](/vi/hoc-tap-tai-rmit/sinh-vien-quoc-te)
-  + [Nhập học RMIT Việt Nam](/vi/hoc-tap-tai-rmit/nhap-hoc-rmit-viet-nam)
-  + [Trải nghiệm toàn cầu](/vi/hoc-tap-tai-rmit/trai-nghiem-hoc-tap-toan-cau)
-  + [Học bổng](/vi/hoc-tap-tai-rmit/hoc-bong)
-  + [Học tập tại RMIT Melbourne](/vi/hoc-tap-tai-rmit/hoc-tap-tai-rmit-melbourne)
-  + [Học phí](/vi/hoc-tap-tai-rmit/hoc-phi)
-  + [Những mốc thời gian quan trọng của sinh viên](/vi/hoc-tap-tai-rmit/nhung-moc-thoi-gian-quan-trong)
-  + [Tại sao chọn RMIT Việt Nam?](/vi/gioi-thieu-chung/tai-sao-chon-rmit-viet-nam)
-  + [Nền giáo dục tại RMIT](/vi/gioi-thieu-chung/ve-chung-toi/giao-duc)
-  + [Các Khoa và Trung tâm](/vi/gioi-thieu-chung/cac-khoa-va-trung-tam)
-  + [Cơ sở học tập](/vi/gioi-thieu-chung/vi-tri-va-co-so-hoc-tap)
-* [Cuộc sống sinh viên](/vi/doi-song-sinh-vien)
-
-  + [Cuộc sống tại RMIT](/vi/doi-song-sinh-vien/trai-nghiem-sinh-vien-rmit)
-  + [Câu lạc bộ Sinh viên](/vi/doi-song-sinh-vien/cau-lac-bo-sinh-vien)
-  + [Hỗ trợ sinh viên](/vi/doi-song-sinh-vien/ho-tro-sinh-vien)
-  + [Cơ hội cuộc sống và nghề nghiệp](/vi/doi-song-sinh-vien/co-hoi-trai-nghiem-va-viec-lam)
-* [Giới thiệu chung](/vi/gioi-thieu-chung)
-
-  + [Tại sao chọn RMIT Việt Nam?](/vi/gioi-thieu-chung/tai-sao-chon-rmit-viet-nam)
-  + [Dành cho phụ huynh và gia đình](/vi/gioi-thieu-chung/phu-huynh-va-gia-dinh-rmit)
-  + [Cơ hội nghề nghiệp tại RMIT](/vi/gioi-thieu-chung/lam-viec-tai-rmit)
-  + [Các Khoa và Trung tâm](/vi/gioi-thieu-chung/cac-khoa-va-trung-tam)
-  + [Chúng tôi là ai](/vi/gioi-thieu-chung/ve-chung-toi)
-  + [Cam kết hành động của Đại học RMIT tại Việt Nam](/vi/gioi-thieu-chung/ve-chung-toi/cam-ket-cua-rmit/cam-ket-hanh-dong-cua-dai-hoc-rmit-tai-viet-nam)
-  + [Cơ sở học tập](/vi/gioi-thieu-chung/vi-tri-va-co-so-hoc-tap)
-  + [Bản tin](/vi/tin-tuc)
-  + [Sự kiện](/vi/su-kien)
-* [Nghiên cứu](/vi/nghien-cuu)
-
-  + [Lĩnh vực nghiên cứu](/vi/nghien-cuu/cac-nghien-cuu-trong-diem)
-  + [Dự án và quan hệ đối tác](/vi/nghien-cuu/du-an-va-quan-he-doi-tac)
-  + [Đạo đức và tính liêm chính](/vi/nghien-cuu/dao-duc-va-tinh-liem-chinh)
-  + [Chương trình Tiến sĩ](/vi/hoc-tap-tai-rmit/chuong-trinh-tien-si)
-  + [Phòng Quản lý Nghiên cứu và Đổi mới](/vi/nghien-cuu/phong-quan-ly-nghien-cuu-va-doi-moi)
-* [Doanh nghiệp](/vi/to-chuc-va-doanh-nghiep)
-
-  + [Tuyển dụng sinh viên & cựu sinh viên RMIT](/vi/to-chuc-va-doanh-nghiep)
-  + [Sự khác biệt của sinh viên RMIT Việt Nam](/vi/to-chuc-va-doanh-nghiep/ky-nang-tao-su-khac-biet)
-  + [Nhà tuyển dụng](/vi/to-chuc-va-doanh-nghiep/nha-tuyen-dung)
-  + [Hợp tác cùng RMIT](/vi/to-chuc-va-doanh-nghiep/hop-tac-cung-rmit)
-  + [Phát triển Doanh nghiệp và Cấp quản lý](/vi/gioi-thieu-chung/cac-khoa-va-trung-tam/khoa-kinh-doanh/ket-noi-doanh-nghiep/phat-trien-doanh-nghiep-va-cap-quan-ly)
-
-* [Chương trình học](/vi/hoc-tap-tai-rmit)
-* + [Chương trình học theo lĩnh vực](/vi/hoc-tap-tai-rmit/chuong-trinh-hoc-theo-linh-vuc)
-  + [Chương trình cử nhân](/vi/hoc-tap-tai-rmit/chuong-trinh-cu-nhan)
-  + [Chương trình Sau đại học](/vi/hoc-tap-tai-rmit/chuong-trinh-sau-dai-hoc)
-  + [Các chương trình chuyển tiếp](/vi/hoc-tap-tai-rmit/cac-chuong-trinh-chuyen-tiep)
-  + [Chương trình Tiếng Anh](/vi/hoc-tap-tai-rmit/chuong-trinh-tieng-anh)
-  + [Sinh viên Quốc tế](/vi/hoc-tap-tai-rmit/sinh-vien-quoc-te)
-  + [Nhập học RMIT Việt Nam](/vi/hoc-tap-tai-rmit/nhap-hoc-rmit-viet-nam)
-  + [Trải nghiệm toàn cầu](/vi/hoc-tap-tai-rmit/trai-nghiem-hoc-tap-toan-cau)
-  + [Học bổng](/vi/hoc-tap-tai-rmit/hoc-bong)
-  + [Học tập tại RMIT Melbourne](/vi/hoc-tap-tai-rmit/hoc-tap-tai-rmit-melbourne)
-  + [Học phí](/vi/hoc-tap-tai-rmit/hoc-phi)
-  + [Những mốc thời gian quan trọng của sinh viên](/vi/hoc-tap-tai-rmit/nhung-moc-thoi-gian-quan-trong)
-  + [Tại sao chọn RMIT Việt Nam?](/vi/gioi-thieu-chung/tai-sao-chon-rmit-viet-nam)
-  + [Nền giáo dục tại RMIT](/vi/gioi-thieu-chung/ve-chung-toi/giao-duc)
-  + [Các Khoa và Trung tâm](/vi/gioi-thieu-chung/cac-khoa-va-trung-tam)
-  + [Cơ sở học tập](/vi/gioi-thieu-chung/vi-tri-va-co-so-hoc-tap)
-* [Cuộc sống sinh viên](/vi/doi-song-sinh-vien)
-* + [Cuộc sống tại RMIT](/vi/doi-song-sinh-vien/trai-nghiem-sinh-vien-rmit)
-  + [Câu lạc bộ Sinh viên](/vi/doi-song-sinh-vien/cau-lac-bo-sinh-vien)
-  + [Hỗ trợ sinh viên](/vi/doi-song-sinh-vien/ho-tro-sinh-vien)
-  + [Cơ hội cuộc sống và nghề nghiệp](/vi/doi-song-sinh-vien/co-hoi-trai-nghiem-va-viec-lam)
-* [Giới thiệu chung](/vi/gioi-thieu-chung)
-* + [Tại sao chọn RMIT Việt Nam?](/vi/gioi-thieu-chung/tai-sao-chon-rmit-viet-nam)
-  + [Dành cho phụ huynh và gia đình](/vi/gioi-thieu-chung/phu-huynh-va-gia-dinh-rmit)
-  + [Cơ hội nghề nghiệp tại RMIT](/vi/gioi-thieu-chung/lam-viec-tai-rmit)
-  + [Các Khoa và Trung tâm](/vi/gioi-thieu-chung/cac-khoa-va-trung-tam)
-  + [Chúng tôi là ai](/vi/gioi-thieu-chung/ve-chung-toi)
-  + [Cam kết hành động của Đại học RMIT tại Việt Nam](/vi/gioi-thieu-chung/ve-chung-toi/cam-ket-cua-rmit/cam-ket-hanh-dong-cua-dai-hoc-rmit-tai-viet-nam)
-  + [Cơ sở học tập](/vi/gioi-thieu-chung/vi-tri-va-co-so-hoc-tap)
-  + [Bản tin](/vi/tin-tuc)
-  + [Sự kiện](/vi/su-kien)
-* [Nghiên cứu](/vi/nghien-cuu)
-* + [Lĩnh vực nghiên cứu](/vi/nghien-cuu/cac-nghien-cuu-trong-diem)
-  + [Dự án và quan hệ đối tác](/vi/nghien-cuu/du-an-va-quan-he-doi-tac)
-  + [Đạo đức và tính liêm chính](/vi/nghien-cuu/dao-duc-va-tinh-liem-chinh)
-  + [Chương trình Tiến sĩ](/vi/hoc-tap-tai-rmit/chuong-trinh-tien-si)
-  + [Phòng Quản lý Nghiên cứu và Đổi mới](/vi/nghien-cuu/phong-quan-ly-nghien-cuu-va-doi-moi)
-* [Doanh nghiệp](/vi/to-chuc-va-doanh-nghiep)
-* + [Tuyển dụng sinh viên & cựu sinh viên RMIT](/vi/to-chuc-va-doanh-nghiep)
-  + [Sự khác biệt của sinh viên RMIT Việt Nam](/vi/to-chuc-va-doanh-nghiep/ky-nang-tao-su-khac-biet)
-  + [Nhà tuyển dụng](/vi/to-chuc-va-doanh-nghiep/nha-tuyen-dung)
-  + [Hợp tác cùng RMIT](/vi/to-chuc-va-doanh-nghiep/hop-tac-cung-rmit)
-  + [Phát triển Doanh nghiệp và Cấp quản lý](/vi/gioi-thieu-chung/cac-khoa-va-trung-tam/khoa-kinh-doanh/ket-noi-doanh-nghiep/phat-trien-doanh-nghiep-va-cap-quan-ly)
 
 ![](/assets/vn/en/assets-for-production/images/news/scholarship-2025-masthead.jpg)
 
@@ -191,19 +67,9 @@ Lễ Trao học bổng Đại học RMIT Việt Nam không chỉ ghi nhận thà
 
 Tìm hiểu thêm
 
-[Liên hệ phòng Truyền thông](/vi/tin-tuc/lien-he-phong-truyen-thong)
-
-[Tìm kiếm chuyên gia](/vi/tin-tuc/tim-kiem-chuyen-gia)
-
-[RMIT qua sự kiện và con số](/vi/gioi-thieu-chung/tai-sao-chon-rmit-viet-nam/rmit-qua-su-kien-va-con-so)
-
 ## Tin tức liên quan
 
 [![thumbnail-d-ad-new-blood-awards-rmit-vietnam-2026.jpg](/assets/vn/en/assets-for-production/images/news/thumbnail-d-ad-new-blood-awards-rmit-vietnam-2026.jpg)](/vi/tin-tuc/tat-ca-tin-tuc/2026/jul/world-cup-truyen-cam-hung-cho-chien-thang-sang-tao-toan-cau-cua-sinh-vien-rmit)
-
-[### World Cup truyền cảm hứng cho chiến thắng sáng tạo toàn cầu của sinh viên RMIT](/vi/tin-tuc/tat-ca-tin-tuc/2026/jul/world-cup-truyen-cam-hung-cho-chien-thang-sang-tao-toan-cau-cua-sinh-vien-rmit)
-
-[Truyền thông và Thiết kế](/)
 
 17/07/2026
 
@@ -211,19 +77,11 @@ Hòa chung không khí nô nức chờ xem trận chung kết World Cup, nước
 
 [![rmit-vietnam-languages-student-nguyen-thanh-truc-international-leadership-program-2026-united-nations-conference-centre-bangkok.jpg](/assets/vn/en/assets-for-production/images/news/rmit-vietnam-languages-student-nguyen-thanh-truc-international-leadership-program-2026-united-nations-conference-centre-bangkok.jpg)](/vi/tin-tuc/tat-ca-tin-tuc/2026/jul/sinh-vien-rmit-tim-thay-su-menh-toan-cau-tu-chuong-trinh-lanh-dao-cua-lien-hop-quoc)
 
-[### Sinh viên RMIT tìm thấy sứ mệnh toàn cầu từ chương trình lãnh đạo của Liên Hợp Quốc](/vi/tin-tuc/tat-ca-tin-tuc/2026/jul/sinh-vien-rmit-tim-thay-su-menh-toan-cau-tu-chuong-trinh-lanh-dao-cua-lien-hop-quoc)
-
-[Truyền thông và Thiết kế](/)
-
 15/07/2026
 
 Nguyễn Thanh Trúc, sinh viên ngành Ngôn ngữ (Đại học RMIT Việt Nam) đã đại diện Việt Nam tham dự Chương trình Lãnh đạo quốc tế 2026 tổ chức tại Trung tâm Hội nghị Liên Hợp Quốc ở Bangkok (Thái Lan).
 
 [![1st-runner-up-announcement-nguyen-ngoc-diep-doanh-nhan-tap-su-2026.jpg](/assets/vn/en/assets-for-production/images/news/1st-runner-up-announcement-nguyen-ngoc-diep-doanh-nhan-tap-su-2026.jpg)](/vi/tin-tuc/tat-ca-tin-tuc/2026/jul/nu-sinh-rmit-toa-sang-tai-cuoc-thi-quan-tri-vien-tap-su-hang-dau-viet-nam)
-
-[### Nữ sinh RMIT tỏa sáng tại cuộc thi Quản trị viên tập sự hàng đầu Việt Nam](/vi/tin-tuc/tat-ca-tin-tuc/2026/jul/nu-sinh-rmit-toa-sang-tai-cuoc-thi-quan-tri-vien-tap-su-hang-dau-viet-nam)
-
-[Kinh doanh và Quản trị](/vi/tin-tuc/kinh-doanh)
 
 03/07/2026
 
@@ -231,72 +89,11 @@ Sinh viên RMIT Việt Nam Nguyễn Ngọc Diệp đã giành danh hiệu Á qu�
 
 [![news-thumb-rmit-continues-to-rise-in-world-rankings.jpg](https://s7ap1.scene7.com/is/image/rmit/news-thumb-rmit-continues-to-rise-in-world-rankings?wid=480)](/vi/tin-tuc/tat-ca-tin-tuc/2026/jun/dai-hoc-rmit-lot-vao-top-10-toan-cau-o-ba-tieu-chi-ve-phat-trien-ben-vung)
 
-[### Đại học RMIT lọt vào top 10 toàn cầu ở ba tiêu chí về phát triển bền vững](/vi/tin-tuc/tat-ca-tin-tuc/2026/jun/dai-hoc-rmit-lot-vao-top-10-toan-cau-o-ba-tieu-chi-ve-phat-trien-ben-vung)
-
-[Thông cáo báo chí](/)
-
 24/06/2026
 
 Theo bảng xếp hạng Impact Rankings mới nhất của tạp chí Times Higher Education (THE), RMIT lọt top 10 thế giới ở ba Mục tiêu phát triển bền vững (SDGs) của Liên Hợp Quốc.
 
 Xem thêm +
-
-* [Bản tin](/vi/tin-tuc)
-* [Sự kiện](/vi/su-kien)
-* [Thư viện](/libraryvn)
-* [Cơ sở](/vi/gioi-thieu-chung/vi-tri-va-co-so-hoc-tap)
-* [Sự nghiệp](/vi/gioi-thieu-chung/lam-viec-tai-rmit)
-* [Liên hệ](/vi/lien-he)
-
-[Học tập tại RMIT](/vi/hoc-tap-tai-rmit)
-![](/etc.clientlibs/rmit/clientlibs/clientlib-webpack/resources/icons/down-chevron-white.svg)![](/etc.clientlibs/rmit/clientlibs/clientlib-webpack/resources/icons/down-chevron-grey.svg)
-
-* [Chương trình học theo lĩnh vực](/vi/hoc-tap-tai-rmit/chuong-trinh-hoc-theo-linh-vuc)
-* [Chương trình cử nhân](/vi/hoc-tap-tai-rmit/chuong-trinh-cu-nhan)
-* [Chương trình Sau đại học](/vi/hoc-tap-tai-rmit/chuong-trinh-sau-dai-hoc)
-* [Các chương trình chuyển tiếp](/vi/hoc-tap-tai-rmit/cac-chuong-trinh-chuyen-tiep)
-* [Chương trình Tiếng Anh](/vi/hoc-tap-tai-rmit/chuong-trinh-tieng-anh)
-* [Sinh viên Quốc tế](/vi/hoc-tap-tai-rmit/sinh-vien-quoc-te)
-* [Nhập học RMIT Việt Nam](/vi/hoc-tap-tai-rmit/nhap-hoc-rmit-viet-nam)
-* [Trải nghiệm học tâp toàn cầu](/vi/hoc-tap-tai-rmit/trai-nghiem-hoc-tap-toan-cau)
-* [Học bổng](/vi/hoc-tap-tai-rmit/hoc-bong)
-* [Học tập tại RMIT Melbourne](/vi/hoc-tap-tai-rmit/hoc-tap-tai-rmit-melbourne)
-* [Học phí](/vi/hoc-tap-tai-rmit/hoc-phi)
-* [Những mốc thời gian quan trọng của sinh viên](/vi/hoc-tap-tai-rmit/nhung-moc-thoi-gian-quan-trong)
-
-[Cuộc sống sinh viên](/vi/doi-song-sinh-vien)
-![](/etc.clientlibs/rmit/clientlibs/clientlib-webpack/resources/icons/down-chevron-white.svg)![](/etc.clientlibs/rmit/clientlibs/clientlib-webpack/resources/icons/down-chevron-grey.svg)
-
-* [Cuộc sống tại RMIT](/vi/doi-song-sinh-vien/trai-nghiem-sinh-vien-rmit)
-* [Câu lạc bộ Sinh viên](/vi/doi-song-sinh-vien/cau-lac-bo-sinh-vien)
-* [Hỗ trợ sinh viên](/vi/doi-song-sinh-vien/ho-tro-sinh-vien)
-* [Cơ hội cuộc sống và nghề nghiệp](/vi/doi-song-sinh-vien/co-hoi-trai-nghiem-va-viec-lam)
-
-[Giới thiệu chung](/vi/gioi-thieu-chung)
-![](/etc.clientlibs/rmit/clientlibs/clientlib-webpack/resources/icons/down-chevron-white.svg)![](/etc.clientlibs/rmit/clientlibs/clientlib-webpack/resources/icons/down-chevron-grey.svg)
-
-* [Tại sao chọn RMIT Việt Nam?](/about-us/why-choose-rmit)
-* [Dành cho phụ huynh và gia đình](/vi/gioi-thieu-chung/phu-huynh-va-gia-dinh-rmit)
-* [Cơ hội nghề nghiệp tại RMIT](/vi/gioi-thieu-chung/lam-viec-tai-rmit)
-* [Các Khoa và Trung tâm](/vi/gioi-thieu-chung/cac-khoa-va-trung-tam)
-* [Về chúng tôi](/vi/gioi-thieu-chung/ve-chung-toi)
-
-[Nghiên cứu](/vi/nghien-cuu)
-![](/etc.clientlibs/rmit/clientlibs/clientlib-webpack/resources/icons/down-chevron-white.svg)![](/etc.clientlibs/rmit/clientlibs/clientlib-webpack/resources/icons/down-chevron-grey.svg)
-
-* [Lĩnh vực nghiên cứu](/vi/nghien-cuu/cac-nghien-cuu-trong-diem)
-* [Dự án và quan hệ đối tác](/vi/nghien-cuu/du-an-va-quan-he-doi-tac)
-* [Đạo đức và tính liêm chính](/vi/nghien-cuu/dao-duc-va-tinh-liem-chinh)
-* [Chương trình Tiến sĩ](/vi/hoc-tap-tai-rmit/chuong-trinh-tien-si)
-* [Phòng Quản lý Nghiên cứu và Đổi mới](/vi/nghien-cuu/phong-quan-ly-nghien-cuu-va-doi-moi)
-
-[Doanh nghiệp](/vi/to-chuc-va-doanh-nghiep)
-![](/etc.clientlibs/rmit/clientlibs/clientlib-webpack/resources/icons/down-chevron-white.svg)![](/etc.clientlibs/rmit/clientlibs/clientlib-webpack/resources/icons/down-chevron-grey.svg)
-
-* [Tuyển dụng sinh viên và cựu sinh viên RMIT](/vi/to-chuc-va-doanh-nghiep/tuyen-dung-sinh-vien-va-cuu-sinh-vien)
-* [Sự khác biệt của sinh viên RMIT Việt Nam](/vi/to-chuc-va-doanh-nghiep/ky-nang-tao-su-khac-biet)
-* [Nhà tuyển dụng](/vi/to-chuc-va-doanh-nghiep/nha-tuyen-dung)
-* [Hợp tác cùng RMIT](/vi/to-chuc-va-doanh-nghiep/hop-tac-cung-rmit)
 
 * Copyright © 2026 RMIT University  |
 * [Tuyên bố từ chối](/vi/tuyen-bo-tu-choi) |
@@ -307,4 +104,3 @@ Xem thêm +
 * [Khiếu nại](/vi/utilities/khieu-nai) |
 * ABN 49 781 030 034  |
 * CRICOS provider number: 00122A  |
-* [Open Universities Australia](https://www.open.edu.au/courses/degrees/rmit)

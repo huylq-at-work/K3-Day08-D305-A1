@@ -50,10 +50,23 @@ Xem code mẫu (DeepEval/RAGAS/TruLens) chi tiết trong `README.md` gốc mục
 
 ### Deliverable Evaluation
 
-- [ ] File `group_project/evaluation/golden_dataset.json` — 15+ cặp Q&A
-- [ ] File `group_project/evaluation/eval_pipeline.py` — script chạy evaluation
-- [ ] File `group_project/evaluation/results.md` — bảng điểm + phân tích
-- [ ] So sánh A/B ít nhất 2 configs
+- [x] File `group_project/evaluation/golden_dataset.json` — 18 cặp Q&A (yêu cầu 15+)
+- [x] File `group_project/evaluation/eval_pipeline.py` — DeepEval, 4 metric
+- [x] File `group_project/evaluation/results.md` — bảng điểm + worst performers
+- [x] So sánh A/B 4 configs: `hybrid_rerank`, `hybrid_norerank`, `dense_only`, `sparse_only`
+
+Chạy lại đánh giá:
+
+```bash
+python -m group_project.evaluation.eval_pipeline --configs hybrid_rerank dense_only
+```
+
+Thêm `--limit 5` để chạy nhanh trên tập con khi thử nghiệm (đỡ tốn lượt gọi LLM).
+
+> Nhóm dùng **DeepEval** chứ không phải RAGAS: `ragas==0.1.21` kéo `numpy<2`, mà bản
+> numpy đó không có wheel cho Python 3.14 nên pip phải build từ nguồn và cần Visual C++
+> Build Tools. Bản ragas mới hơn thì kéo `scikit-network`, cũng phải build bằng C.
+> Bài lab cho phép cả ba framework.
 
 ---
 
@@ -70,8 +83,87 @@ Xem code mẫu (DeepEval/RAGAS/TruLens) chi tiết trong `README.md` gốc mục
 ## Kiến Trúc Hệ Thống
 
 ```
-[Vẽ diagram kiến trúc ở đây]
+                      ┌─────────────────────────────────────────┐
+  NGUỒN DỮ LIỆU       │  rmit.edu.vn (trang công khai)          │
+                      └───────────────┬─────────────────────────┘
+                                      │
+         ┌────────────────────────────┴────────────────────────────┐
+         │                                                          │
+   Task 1: tải PDF chính sách                    Task 2: crawl bài viết/thông báo
+   → data/landing/legal/  (3 file)               → data/landing/news/  (5 file JSON)
+         │                                                          │
+         └────────────────────────────┬────────────────────────────┘
+                                      ▼
+                      Task 3: MarkItDown → Markdown chuẩn hoá
+                      • bóc nội dung khỏi HTML thô (crawler fallback lưu cả trang)
+                      • bỏ dòng chỉ chứa link điều hướng
+                      • khử bài trùng nội dung theo hash
+                      → data/standardized/   (240KB/bài → ~8KB/bài)
+                                      ▼
+                      Task 4: Chunking & Indexing
+                      • RecursiveCharacterTextSplitter, size=800, overlap=100
+                      • embedding BAAI/bge-m3 (1024 chiều, đa ngôn ngữ)
+                      → chroma_db/  (ChromaDB, cosine)
+                                      │
+  ════════════════════════════════════╪════════════════════════════════════
+  TRUY VẤN                            ▼
+                              ┌───────────────┐
+                              │  Câu hỏi      │
+                              └───────┬───────┘
+                                      │  (chạy song song — ThreadPoolExecutor)
+                    ┌─────────────────┴─────────────────┐
+                    ▼                                   ▼
+        Task 5: Semantic Search              Task 6: Lexical Search
+        dense, cosine trên ChromaDB          BM25 trên corpus markdown
+        → score ∈ [0,1]  ◄── giữ lại         → score BM25 (thang khác)
+                    │        làm căn cứ                 │
+                    │        fallback                   │
+                    └─────────────────┬─────────────────┘
+                                      ▼
+                      Task 7: RRF Rerank   RRF(d) = Σ 1/(60 + rank)
+                      • chỉ dùng THỨ HẠNG — hai thang điểm trên
+                        không cộng trực tiếp được với nhau
+                      • sau khi fuse, điểm chỉ còn ~0.016
+                                      ▼
+                      Task 9: Retrieval Pipeline
+                      • nếu cosine GỐC của top-1 dense < 0.48
+                        → chuyển sang Task 8
+                      • KHÔNG so ngưỡng với điểm RRF (xem ghi chú dưới)
+                                      │
+                          ┌───────────┴───────────┐
+                     đủ tốt │                     │ không đủ tốt
+                            ▼                     ▼
+                    source = "hybrid"     Task 8: PageIndex Vectorless
+                                          truy vấn theo cấu trúc tài liệu
+                                          source = "pageindex"
+                            └───────────┬───────────┘
+                                        ▼
+                      Task 10: Generation có Citation
+                      • reorder chống "lost in the middle": front + back[::-1]
+                      • nhãn nguồn lấy từ metadata["source"] (tên file thật)
+                      • temperature=0.3, top_p=0.9
+                      • thiếu bằng chứng → "Tôi không thể xác minh..."
+                                        ▼
+                      app.py — Streamlit Chatbot
+                      • lịch sử hội thoại, câu hỏi gợi ý
+                      • bật/tắt Semantic · BM25 · Rerank  ──┐
+                      • hiển thị nguồn + điểm số            │
+                                                            ▼
+                                          group_project/evaluation/
+                                          DeepEval — 4 metric, so sánh A/B
+                                          cùng 3 cờ trên → số đo khớp với UI
 ```
+
+### Hai quyết định thiết kế đáng chú ý
+
+**Ngưỡng fallback so với điểm cosine gốc, không phải điểm RRF.** Sau khi fuse, điểm
+RRF chỉ phản ánh thứ hạng: top-1 luôn xấp xỉ `1/(60+1) ≈ 0.016` kể cả với câu hỏi hoàn
+toàn lạc đề. Nếu lấy điểm đó so ngưỡng thì fallback không bao giờ kích hoạt. Task 9 giữ
+riêng `dense_results[0]["score"]` (cosine, thang `[0,1]`) làm căn cứ quyết định.
+
+**Tắt rerank thì bỏ luôn bước RRF.** Với `RERANK_METHOD="rrf"`, bước fuse chính là bước
+rerank — nếu chỉ bỏ lần rerank thứ hai thì cờ `use_reranking` là no-op và phép so sánh
+A/B cho hai kết quả giống hệt nhau.
 
 ---
 
