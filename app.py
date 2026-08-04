@@ -52,6 +52,11 @@ with st.sidebar:
         if st.button(s, use_container_width=True, key=f"sug_{s[:20]}"):
             st.session_state["pending_query"] = s
 
+    if st.button("🧹 Xóa lịch sử chat", use_container_width=True):
+        st.session_state.messages = []
+        st.session_state.pending_query = None
+        st.rerun()
+
     st.divider()
     st.subheader("⚙️ Thiết lập")
     top_k = st.slider("Số chunks retrieval (top_k)", 3, 10, 5)
@@ -75,6 +80,9 @@ if "pending_query" not in st.session_state:
 
 st.title("🎓 University Services RAG Chatbot")
 st.caption("Hệ thống hỏi đáp thông tin dịch vụ đại học (Học phí, Học bổng, Ký túc xá, Thư viện)")
+
+if not st.session_state.messages:
+    st.info("Nhập câu hỏi ở ô chat bên dưới. Khi pipeline hoàn chỉnh, app sẽ hiển thị câu trả lời kèm nguồn tham khảo.")
 
 # Hiển thị lịch sử chat
 for msg in st.session_state.messages:
