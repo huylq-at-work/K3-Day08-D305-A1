@@ -177,7 +177,32 @@ def _collection_metadata() -> dict[str, Any]:
     }
 
 
-def index_to_vectorstore(chunks: list[dict]) -> int:
+def get_collection() -> Any:
+    """Retrieve the ChromaDB collection used for indexing and searching.
+
+    Returns:
+        chromadb.api.models.Collection.Collection: The initialized collection.
+    """
+    import chromadb
+    CHROMA_DIR.mkdir(parents=True, exist_ok=True)
+    client = chromadb.PersistentClient(path=str(CHROMA_DIR))
+    # Ensure collection exists (will create if missing)
+    collection = client.get_or_create_collection(
+        name=COLLECTION_NAME,
+        metadata=_collection_metadata(),
+    )
+    return collection
+
+def get_embedding_model():
+    """Instantiate and return the SentenceTransformer embedding model.
+
+    Returns:
+        SentenceTransformer: The embedding model defined by EMBEDDING_MODEL.
+    """
+    from sentence_transformers import SentenceTransformer
+    model = SentenceTransformer(EMBEDDING_MODEL)
+    return model
+
     """
     Lưu chunks vào vector store đã chọn.
     """
