@@ -100,21 +100,57 @@ def chunk_documents(documents: list[dict]) -> list[dict]:
     Returns:
         List of {'content': str, 'metadata': dict} — mỗi item là 1 chunk
     """
-    from langchain_text_splitters import RecursiveCharacterTextSplitter
+    try:
+        from langchain_text_splitters import RecursiveCharacterTextSplitter
+        splitter = RecursiveCharacterTextSplitter(
+            chunk_size=CHUNK_SIZE,
+            chunk_overlap=CHUNK_OVERLAP,
+            length_function=len,
+            separators=["\n\n", "\n", ". ", " ", ""],
+        )
 
-    splitter = RecursiveCharacterTextSplitter(
-        chunk_size=CHUNK_SIZE,
-        chunk_overlap=CHUNK_OVERLAP,
-        length_function=len,
-        separators=["\n\n", "\n", ". ", " ", ""],
-    )
+        def split_text(text: str) -> list[str]:
+            return splitter.split_text(text)
+    except Exception:
+        def split_text(text: str) -> list[str]:
+            """Fallback splitter with fixed-size windows and overlap."""
+            cleaned = text.strip()
+            if not cleaned:
+                return []
+
+            chunks: list[str] = []
+            start = 0
+            text_length = len(cleaned)
+            while start < text_length:
+                end = min(start + CHUNK_SIZE, text_length)
+                if end < text_length:
+                    split_point = cleaned.rfind("\n\n", start, end)
+                    if split_point == -1:
+                        split_point = cleaned.rfind("\n", start, end)
+                    if split_point == -1:
+                        split_point = cleaned.rfind(". ", start, end)
+                    if split_point == -1:
+                        split_point = cleaned.rfind(" ", start, end)
+                    if split_point != -1 and split_point > start:
+                        end = split_point + 1
+
+                chunk = cleaned[start:end].strip()
+                if chunk:
+                    chunks.append(chunk)
+
+                if end >= text_length:
+                    break
+
+                start = max(end - CHUNK_OVERLAP, start + 1)
+
+            return chunks
 
     chunks = []
     for doc in documents:
         content = doc.get("content", "").strip()
         if not content:
             continue
-        for chunk_index, chunk_text in enumerate(splitter.split_text(content)):
+        for chunk_index, chunk_text in enumerate(split_text(content)):
             chunks.append(
                 {
                     "content": chunk_text,
