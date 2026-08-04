@@ -19,6 +19,30 @@ load_dotenv()
 PROJECT_ROOT = Path(__file__).parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
+from src.task10_generation import generate_with_citation
+
+
+def render_sources(sources: list[dict]) -> None:
+    """Hiển thị danh sách chunks được Task 10 dùng làm nguồn trả lời."""
+    if not sources:
+        return
+
+    with st.expander(f"📚 Nguồn tham khảo ({len(sources)} chunks)"):
+        for i, source in enumerate(sources, 1):
+            metadata = source.get("metadata") or {}
+            source_name = metadata.get("source", "Unknown")
+            document_type = metadata.get("type", "unknown")
+            score = float(source.get("score", 0.0))
+            content = str(source.get("content", ""))
+            preview = content[:300] + ("..." if len(content) > 300 else "")
+
+            st.markdown(
+                f"**[{i}] {source_name}** `{document_type}` | "
+                f"score: `{score:.4f}`"
+            )
+            st.text(preview)
+            st.divider()
+
 # =============================================================================
 # PAGE CONFIG
 # =============================================================================
@@ -81,15 +105,7 @@ for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
         st.markdown(msg["content"])
         if msg["role"] == "assistant" and "sources" in msg and msg["sources"]:
-            with st.expander(f"📚 Nguồn tham khảo ({len(msg['sources'])} chunks)"):
-                for i, src in enumerate(msg["sources"], 1):
-                    meta = src.get("metadata", {})
-                    source_name = meta.get("source", "Unknown")
-                    doc_type = meta.get("type", "unknown")
-                    score = src.get("score", 0)
-                    st.markdown(f"**[{i}] {source_name}** `{doc_type}` | score: `{score:.4f}`")
-                    st.text(src.get("content", "")[:300] + "...")
-                    st.divider()
+            render_sources(msg["sources"])
 
 # =============================================================================
 # QUERY HANDLING
@@ -111,18 +127,13 @@ if query:
     with st.chat_message("assistant"):
         with st.spinner("Đang tìm kiếm tài liệu và tổng hợp câu trả lời..."):
             try:
-                # TODO (Học viên): Tích hợp hàm sinh câu trả lời từ Task 10
-                # Ví dụ:
-                # from src.task10_generation import generate_with_citation
-                # response = generate_with_citation(query, top_k=top_k)
-                # answer = response["answer"]
-                # sources = response.get("sources", [])
-
-                # Tạm thời mockup để test UI:
-                from src.task10_generation import generate_with_citation
                 response = generate_with_citation(query, top_k=top_k)
-                answer = response.get("answer", "Chưa thể trả lời.")
-                sources = response.get("sources", [])
+                if not isinstance(response, dict):
+                    raise TypeError("generate_with_citation() phải trả về dict")
+
+                answer = str(response.get("answer") or "Chưa thể trả lời.")
+                raw_sources = response.get("sources") or []
+                sources = raw_sources if isinstance(raw_sources, list) else []
 
             except NotImplementedError:
                 answer = "⚠️ **Task 10 chưa được implement.** Hãy hoàn thành `src/task10_generation.py` để kết nối pipeline vào UI!"
@@ -132,17 +143,7 @@ if query:
                 sources = []
 
             st.markdown(answer)
-
-            if sources:
-                with st.expander(f"📚 Nguồn tham khảo ({len(sources)} chunks)"):
-                    for i, src in enumerate(sources, 1):
-                        meta = src.get("metadata", {})
-                        source_name = meta.get("source", "Unknown")
-                        doc_type = meta.get("type", "unknown")
-                        score = src.get("score", 0)
-                        st.markdown(f"**[{i}] {source_name}** `{doc_type}` | score: `{score:.4f}`")
-                        st.text(src.get("content", "")[:300] + "...")
-                        st.divider()
+            render_sources(sources)
 
     st.session_state.messages.append({
         "role": "assistant",
