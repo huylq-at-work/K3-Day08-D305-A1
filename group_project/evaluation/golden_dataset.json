@@ -13,5 +13,15 @@
     "question": "Trường có cung cấp ký túc xá trong khuôn viên không?",
     "expected_answer": "Không — trường không cung cấp chỗ ở trong khuôn viên, nhưng có đội ngũ hỗ trợ sinh viên tìm chỗ ở gần trường.",
     "expected_context": "Trang Accommodation Services"
+  },
+  {
+    "question": "Làm thế nào để đăng ký phòng học nhóm tại thư viện?",
+    "expected_answer": "Sinh viên có thể đặt phòng học nhóm qua hệ thống Library Booking System trên trang web của thư viện.",
+    "expected_context": "Trang Library Services"
+  },
+  {
+    "question": "Có những loại học bổng nào dành cho sinh viên xuất sắc?",
+    "expected_answer": "RMIT Vietnam có học bổng Academic Achievement Scholarship dành cho sinh viên có thành tích học tập xuất sắc.",
+    "expected_context": "Trang Scholarships"
   }
 ]
