@@ -137,7 +137,13 @@ def format_context(chunks: list[dict]) -> str:
 # GENERATION
 # =============================================================================
 
-def generate_with_citation(query: str, top_k: int = TOP_K) -> dict:
+def generate_with_citation(
+    query: str,
+    top_k: int = TOP_K,
+    use_semantic: bool = True,
+    use_lexical: bool = True,
+    use_reranking: bool = True,
+) -> dict:
     """
     End-to-end RAG generation có citation.
 
@@ -160,7 +166,16 @@ def generate_with_citation(query: str, top_k: int = TOP_K) -> dict:
         }
     """
     try:
-        chunks = retrieve(query, top_k=top_k)
+        chunks = retrieve(
+            query,
+            top_k=top_k,
+            use_semantic=use_semantic,
+            use_lexical=use_lexical,
+            use_reranking=use_reranking,
+        )
+    except ValueError:
+        # Cấu hình sai từ UI (tắt cả hai retriever) — để lộ ra thay vì nuốt.
+        raise
     except Exception:
         chunks = []
 
