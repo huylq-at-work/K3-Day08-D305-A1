@@ -79,10 +79,12 @@ Xem code mẫu (DeepEval/RAGAS/TruLens) chi tiết trong `README.md` gốc mục
 
 | Thành viên | MSSV | Nhiệm vụ | Trạng thái |
 |-----------|------|----------|------------|
-| | | | |
-| | | | |
-| | | | |
-| | | | |
+| Lê Quang Huy | 2A202601821 | Role 1 — Team Leader & RAG Architect: Task 9 (hybrid pipeline + fallback), gộp code vào `main`, README kiến trúc | ⬜ Chưa bắt đầu |
+| Nguyễn Chí Hướng | 2A202601203 | Role 2 — Data & Retrieval Specialist: Task 1–4 (thu thập, crawl, convert markdown, chunking + ChromaDB) | ⬜ Chưa bắt đầu |
+| Phạm Thị Liên | 2A202601795 | Role 3 — Frontend & Chatbot Dev: Task 5, 8, 10 + Streamlit `app.py` (memory, hiển thị source) | ⬜ Chưa bắt đầu |
+| Nguyễn Tiến Đạt | 2A202601387 | Role 4 — Evaluation & QA: Task 6, 7 + `golden_dataset.json`, RAGAS `eval_pipeline.py`, `results.md` | ⬜ Chưa bắt đầu |
+
+Chi tiết vai trò, branch, quy tắc sở hữu file và lịch checkpoint: [TEAMMATES.md](../TEAMMATES.md)
 
 ---
 
