@@ -28,10 +28,14 @@ Logic:
 from concurrent.futures import Future, ThreadPoolExecutor
 from numbers import Real
 
-from .task5_semantic_search import semantic_search
-from .task6_lexical_search import lexical_search
-from .task7_reranking import rerank, rerank_rrf
-from .task8_pageindex_vectorless import pageindex_search
+import sys
+import os
+# Ensure src directory is in PYTHONPATH for script execution
+sys.path.append(os.path.abspath(os.path.dirname(__file__)))
+from task5_semantic_search import semantic_search
+from task6_lexical_search import lexical_search
+from task7_reranking import rerank, rerank_rrf
+from task8_pageindex_vectorless import pageindex_search
 
 
 # =============================================================================

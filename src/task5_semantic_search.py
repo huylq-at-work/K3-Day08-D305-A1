@@ -8,7 +8,7 @@ Yêu cầu:
     - Output: danh sách chunks có score, sorted descending
     - Phải tương thích với embedding model và vector store ở Task 4
 """
-from .task4_chunking_indexing import get_collection, get_embedding_model
+from task4_chunking_indexing import get_collection, get_embedding_model
 
 def _generate_hypothetical_doc(query: str) -> str:
     """Generate a hypothetical document for HyDE.
