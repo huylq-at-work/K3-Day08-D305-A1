@@ -53,16 +53,15 @@ def _future_result(name: str, future: Future) -> list[dict]:
     """
     Lấy kết quả một retriever; một nhánh chưa sẵn sàng không làm hỏng nhánh còn lại.
 
-    Chỉ nuốt NotImplementedError/ImportError — nghĩa là module của thành viên khác
-    còn là stub hoặc thiếu thư viện. Lỗi thật (ChromaDB chưa index, sai tham số,
-    hỏng kết nối) được ném ra ngoài: retrieval hỏng mà im lặng trả rỗng thì fallback
-    sẽ kích hoạt nhầm và cả pipeline trả kết quả sai mà không ai biết.
+    Semantic và lexical là hai nguồn độc lập. Mọi lỗi runtime của một nguồn (thiếu
+    model/thư viện, Chroma chưa index hoặc lỗi kết nối) được ghi log và chuyển thành
+    danh sách rỗng để nguồn còn lại và PageIndex fallback vẫn có thể phục vụ query.
     """
     try:
         results = future.result()
         return results if isinstance(results, list) else []
-    except (NotImplementedError, ImportError) as exc:
-        print(f"[WARN] {name} search chưa sẵn sàng: {exc}")
+    except Exception as exc:
+        print(f"[WARN] {name} search unavailable: {exc}")
         return []
 
 
