@@ -38,21 +38,27 @@ from .task8_pageindex_vectorless import pageindex_search
 # CONFIGURATION
 # =============================================================================
 
-# TODO: Calibrate threshold này bằng cách tự đo điểm cosine của semantic_search
-# cho câu hỏi liên quan vs câu hỏi lạc đề (xem ghi chú ở trên) — ĐỪNG copy nguyên
-# giá trị mẫu, mỗi corpus/embedding model sẽ cho khoảng điểm khác nhau.
+# Ngưỡng cosine GỐC (thang [0,1] của semantic_search), KHÔNG phải điểm RRF.
+# Đo lại cho corpus của nhóm bằng: python -m src.task9_retrieval_pipeline --calibrate
 SCORE_THRESHOLD = 0.48  # Ngưỡng cosine gốc đã được chốt cho corpus hiện tại
 DEFAULT_TOP_K = 5
 RERANK_METHOD = "rrf"  # "cross_encoder" | "mmr" | "rrf"
 
 
 def _future_result(name: str, future: Future) -> list[dict]:
-    """Lấy kết quả một retriever; lỗi một nhánh không làm hỏng nhánh còn lại."""
+    """
+    Lấy kết quả một retriever; một nhánh chưa sẵn sàng không làm hỏng nhánh còn lại.
+
+    Chỉ nuốt NotImplementedError/ImportError — nghĩa là module của thành viên khác
+    còn là stub hoặc thiếu thư viện. Lỗi thật (ChromaDB chưa index, sai tham số,
+    hỏng kết nối) được ném ra ngoài: retrieval hỏng mà im lặng trả rỗng thì fallback
+    sẽ kích hoạt nhầm và cả pipeline trả kết quả sai mà không ai biết.
+    """
     try:
         results = future.result()
         return results if isinstance(results, list) else []
-    except Exception as exc:
-        print(f"[WARN] {name} search unavailable: {exc}")
+    except (NotImplementedError, ImportError) as exc:
+        print(f"[WARN] {name} search chưa sẵn sàng: {exc}")
         return []
 
 
@@ -168,7 +174,70 @@ def retrieve(
     return final_results[:top_k]
 
 
+# =============================================================================
+# Calibration helper — dùng để chọn SCORE_THRESHOLD, không thuộc phần chấm điểm
+# =============================================================================
+
+# Câu chắc chắn nằm trong corpus (dịch vụ/chính sách RMIT).
+IN_DOMAIN_QUERIES = [
+    "What is the tuition fee at RMIT Vietnam?",
+    "How do I book a library study room?",
+    "What scholarships are available for international students?",
+    "Does the university provide on-campus accommodation?",
+]
+
+# Câu chắc chắn lạc đề hoặc rác — dùng để đo sàn điểm cosine.
+OUT_OF_DOMAIN_QUERIES = [
+    "xyzabc123nonsense",
+    "How do I replace the timing belt on a Toyota Corolla?",
+    "Cách nấu phở bò Nam Định",
+    "asdkjh qwe zxc",
+]
+
+
+def calibrate_threshold() -> None:
+    """
+    In điểm cosine gốc của hai nhóm query để chọn SCORE_THRESHOLD nằm ở giữa.
+
+    Chạy sau khi Task 4 đã sinh xong chroma_db/:
+        python -m src.task9_retrieval_pipeline --calibrate
+    """
+    def _measure(queries: list[str]) -> list[float]:
+        scores = []
+        for q in queries:
+            hits = semantic_search(q, top_k=1)
+            score = float(hits[0]["score"]) if hits else 0.0
+            scores.append(score)
+            print(f"  [{score:.3f}] {q}")
+        return scores
+
+    print("\nIN-DOMAIN (điểm nên CAO):")
+    in_scores = _measure(IN_DOMAIN_QUERIES)
+
+    print("\nOUT-OF-DOMAIN (điểm nên THẤP):")
+    out_scores = _measure(OUT_OF_DOMAIN_QUERIES)
+
+    floor = min(in_scores)
+    ceiling = max(out_scores)
+    print(f"\nIn-domain thấp nhất : {floor:.3f}")
+    print(f"Out-domain cao nhất  : {ceiling:.3f}")
+
+    if floor > ceiling:
+        print(f"→ Đề xuất SCORE_THRESHOLD = {(floor + ceiling) / 2:.2f}")
+    else:
+        print(
+            "→ Hai nhóm CHỒNG LẤN, không ngưỡng nào tách sạch được. "
+            "Xem lại chunking (Task 4) hoặc đổi embedding model."
+        )
+
+
 if __name__ == "__main__":
+    import sys
+
+    if "--calibrate" in sys.argv:
+        calibrate_threshold()
+        sys.exit(0)
+
     test_queries = [
         "What is the tuition fee at RMIT Vietnam?",
         "How do I book a library study room?",
