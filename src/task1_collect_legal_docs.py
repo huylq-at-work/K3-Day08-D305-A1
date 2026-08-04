@@ -24,31 +24,72 @@ thay vì cố vượt qua, và chỉ dùng nguồn công khai/được phép chi
 
 from pathlib import Path
 
+import requests
+
 DATA_DIR = Path(__file__).parent.parent / "data" / "landing" / "legal"
+
+LEGAL_DOCUMENTS = [
+    (
+        "https://www.rmit.edu.vn/assets/vn/en/assets-for-production/documents/"
+        "pdfs/study-at-rmit/tuition-fees/student-fees-and-charges-guide-06-2026.pdf",
+        "student-fees-and-charges-guide-2026-rmit.pdf",
+    ),
+    (
+        "https://www.rmit.edu.vn/content/dam/rmit/vn/en/assets-for-production/"
+        "documents/pdfs/study-at-rmit/scholarships/english-pdf/"
+        "rmit-university-vietnam-scholarship-terms-and-conditions.pdf",
+        "scholarship-terms-and-conditions-rmit.pdf",
+    ),
+    (
+        "https://www.rmit.edu.vn/content/dam/rmit/vn/en/assets-for-production/"
+        "documents/pdfs/students/enrolment/Enrolment-Variation-Form%20%28f%29%201.pdf",
+        "enrolment-variation-form-rmit.pdf",
+    ),
+]
 
 
 def setup_directory():
     """Tạo thư mục data/landing/legal/ nếu chưa có."""
     DATA_DIR.mkdir(parents=True, exist_ok=True)
-    print(f"✓ Thư mục đã sẵn sàng: {DATA_DIR}")
+    print(f"[OK] Thu muc da san sang: {DATA_DIR}")
 
 
-# TODO: Tải file PDF/DOCX về DATA_DIR
-# Có thể tải thủ công hoặc viết script download nếu có direct link.
-#
-# Ví dụ nếu có direct link:
-#
-# import requests
-#
-# def download_file(url: str, filename: str):
-#     response = requests.get(url)
-#     filepath = DATA_DIR / filename
-#     filepath.write_bytes(response.content)
-#     print(f"✓ Đã tải: {filepath}")
-#
-# Nếu trang là HTML thuần (không phải PDF sẵn), có thể convert nội dung text
-# thành PDF đơn giản bằng thư viện fpdf2 (đã có trong requirements.txt).
+def download_file(url: str, filename: str) -> Path:
+    """Tải và xác thực một tài liệu PDF/DOCX gốc vào ``DATA_DIR``."""
+    if Path(filename).name != filename:
+        raise ValueError("filename chỉ được chứa tên file, không chứa đường dẫn")
+
+    suffix = Path(filename).suffix.lower()
+    if suffix not in {".pdf", ".docx"}:
+        raise ValueError("Chỉ hỗ trợ file PDF hoặc DOCX")
+
+    setup_directory()
+    response = requests.get(
+        url,
+        headers={"User-Agent": "UniversityServicesRAG/1.0"},
+        timeout=60,
+    )
+    response.raise_for_status()
+
+    content_type = response.headers.get("Content-Type", "").lower()
+    content = response.content
+    signatures = {".pdf": b"%PDF-", ".docx": b"PK\x03\x04"}
+    if not content.startswith(signatures[suffix]):
+        raise ValueError(
+            f"Nội dung tải về không phải {suffix[1:].upper()} "
+            f"(Content-Type: {content_type or 'không có'})"
+        )
+
+    filepath = DATA_DIR / filename
+    filepath.write_bytes(content)
+    print(f"[OK] Da tai: {filepath} ({len(content):,} bytes)")
+    return filepath
+
+
+def download_legal_documents() -> list[Path]:
+    """Tải bộ tài liệu chính sách công khai dùng cho Task 1."""
+    return [download_file(url, filename) for url, filename in LEGAL_DOCUMENTS]
 
 
 if __name__ == "__main__":
-    setup_directory()
+    download_legal_documents()
