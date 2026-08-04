@@ -25,6 +25,9 @@ Logic:
     điểm số giữa hai nhóm rồi chọn ngưỡng nằm giữa.
 """
 
+from concurrent.futures import Future, ThreadPoolExecutor
+from numbers import Real
+
 from .task5_semantic_search import semantic_search
 from .task6_lexical_search import lexical_search
 from .task7_reranking import rerank, rerank_rrf
@@ -38,9 +41,39 @@ from .task8_pageindex_vectorless import pageindex_search
 # TODO: Calibrate threshold này bằng cách tự đo điểm cosine của semantic_search
 # cho câu hỏi liên quan vs câu hỏi lạc đề (xem ghi chú ở trên) — ĐỪNG copy nguyên
 # giá trị mẫu, mỗi corpus/embedding model sẽ cho khoảng điểm khác nhau.
-SCORE_THRESHOLD = 0.3   # Nếu best score (cosine gốc) < threshold → fallback PageIndex
+SCORE_THRESHOLD = 0.48  # Ngưỡng cosine gốc đã được chốt cho corpus hiện tại
 DEFAULT_TOP_K = 5
 RERANK_METHOD = "rrf"  # "cross_encoder" | "mmr" | "rrf"
+
+
+def _future_result(name: str, future: Future) -> list[dict]:
+    """Lấy kết quả một retriever; lỗi một nhánh không làm hỏng nhánh còn lại."""
+    try:
+        results = future.result()
+        return results if isinstance(results, list) else []
+    except Exception as exc:
+        print(f"[WARN] {name} search unavailable: {exc}")
+        return []
+
+
+def _pageindex_fallback(query: str, top_k: int) -> list[dict]:
+    """Gọi PageIndex an toàn vì Task 8 và API key đều là tùy chọn."""
+    try:
+        results = pageindex_search(query, top_k=top_k)
+    except Exception as exc:
+        print(f"[WARN] PageIndex fallback unavailable: {exc}")
+        return []
+
+    normalized = []
+    for item in results or []:
+        if not isinstance(item, dict) or not item.get("content"):
+            continue
+        result = item.copy()
+        result.setdefault("score", 0.0)
+        result.setdefault("metadata", {})
+        result["source"] = "pageindex"
+        normalized.append(result)
+    return normalized[:top_k]
 
 
 def retrieve(
@@ -77,33 +110,62 @@ def retrieve(
             'source': str  # 'hybrid' hoặc 'pageindex'
         }
     """
-    # TODO: Implement full retrieval pipeline
-    #
-    # Step 1: Song song chạy semantic + lexical
-    # dense_results = semantic_search(query, top_k=top_k * 2)
-    # sparse_results = lexical_search(query, top_k=top_k * 2)
-    #
-    # Step 2: Merge bằng RRF
-    # merged = rerank_rrf([dense_results, sparse_results], top_k=top_k * 2)
-    # for item in merged:
-    #     item["source"] = "hybrid"
-    #
-    # Step 3: Rerank
-    # if use_reranking and merged:
-    #     final_results = rerank(query, merged, top_k=top_k, method=RERANK_METHOD)
-    # else:
-    #     final_results = merged[:top_k]
-    #
-    # Step 4: Check threshold DÙNG ĐIỂM COSINE GỐC (dense_results), KHÔNG PHẢI RRF
-    # best_score = dense_results[0]["score"] if dense_results else 0.0
-    # if best_score < score_threshold:
-    #     print(f"  ⚠ Semantic best score ({best_score:.3f}) < threshold ({score_threshold})")
-    #     fallback = pageindex_search(query, top_k=top_k)
-    #     if fallback:
-    #         return fallback
-    #
-    # return final_results[:top_k]
-    raise NotImplementedError("Implement retrieve")
+    if not isinstance(query, str) or not query.strip():
+        raise ValueError("query không được để trống")
+    if not isinstance(top_k, int) or top_k < 0:
+        raise ValueError("top_k phải là số nguyên không âm")
+    if not isinstance(score_threshold, Real) or not 0.0 <= score_threshold <= 1.0:
+        raise ValueError("score_threshold phải nằm trong [0, 1]")
+    if top_k == 0:
+        return []
+
+    retrieval_k = top_k * 2
+
+    # Step 1: hai retriever độc lập được chạy đồng thời để giảm latency.
+    with ThreadPoolExecutor(max_workers=2, thread_name_prefix="retrieval") as executor:
+        dense_future = executor.submit(semantic_search, query, retrieval_k)
+        sparse_future = executor.submit(lexical_search, query, retrieval_k)
+        dense_results = _future_result("Semantic", dense_future)
+        sparse_results = _future_result("Lexical", sparse_future)
+
+    # Step 2: RRF chỉ dùng thứ hạng để fuse; điểm của hai retriever không cùng
+    # thang đo nên không cộng trực tiếp cosine với BM25.
+    merged = rerank_rrf(
+        [dense_results, sparse_results],
+        top_k=retrieval_k,
+    )
+    for item in merged:
+        item["source"] = "hybrid"
+
+    # RRF đã là bước reranking. Chỉ chạy thêm reranker khi cấu hình một phương
+    # pháp khác (ví dụ Jina cross-encoder), tránh ghi đè điểm fused bằng RRF lần 2.
+    if use_reranking and merged and RERANK_METHOD != "rrf":
+        final_results = rerank(
+            query,
+            merged,
+            top_k=top_k,
+            method=RERANK_METHOD,
+        )
+        for item in final_results:
+            item["source"] = "hybrid"
+    else:
+        final_results = merged[:top_k]
+
+    # Step 3/4: quyết định fallback bằng cosine GỐC của dense top-1. Tuyệt đối
+    # không dùng merged[0]['score'], vì đó là RRF (~0.016 với k=60).
+    best_dense_score = (
+        float(dense_results[0].get("score", 0.0)) if dense_results else 0.0
+    )
+    if best_dense_score < score_threshold:
+        print(
+            f"[INFO] Dense cosine {best_dense_score:.3f} < "
+            f"threshold {score_threshold:.3f}; trying PageIndex"
+        )
+        fallback_results = _pageindex_fallback(query, top_k)
+        if fallback_results:
+            return fallback_results
+
+    return final_results[:top_k]
 
 
 if __name__ == "__main__":
