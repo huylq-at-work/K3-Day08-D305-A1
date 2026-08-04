@@ -65,6 +65,36 @@ def _future_result(name: str, future: Future) -> list[dict]:
         return []
 
 
+def _interleave_without_fusion(
+    dense_results: list[dict], sparse_results: list[dict], limit: int
+) -> list[dict]:
+    """
+    Baseline cho A/B: gộp hai danh sách mà KHÔNG fuse thứ hạng.
+
+    Lấy xen kẽ dense/sparse theo đúng thứ hạng gốc của từng retriever và khử
+    trùng nội dung. Điểm giữ nguyên thang gốc (cosine hoặc BM25) — không so sánh
+    được giữa hai nhánh, và đó chính là điều RRF sinh ra để khắc phục.
+    """
+    merged: list[dict] = []
+    seen: set[str] = set()
+
+    for pair in zip(dense_results, sparse_results):
+        for item in pair:
+            key = item.get("content", "")
+            if key and key not in seen:
+                seen.add(key)
+                merged.append(dict(item))
+
+    # Danh sách dài hơn còn thừa đuôi sau khi zip cắt ngắn.
+    for item in dense_results[len(sparse_results):] + sparse_results[len(dense_results):]:
+        key = item.get("content", "")
+        if key and key not in seen:
+            seen.add(key)
+            merged.append(dict(item))
+
+    return merged[:limit]
+
+
 def _pageindex_fallback(query: str, top_k: int) -> list[dict]:
     """Gọi PageIndex an toàn vì Task 8 và API key đều là tùy chọn."""
     try:
@@ -90,6 +120,8 @@ def retrieve(
     top_k: int = DEFAULT_TOP_K,
     score_threshold: float = SCORE_THRESHOLD,
     use_reranking: bool = True,
+    use_semantic: bool = True,
+    use_lexical: bool = True,
 ) -> list[dict]:
     """
     Retrieval pipeline hoàn chỉnh với fallback logic.
@@ -110,6 +142,11 @@ def retrieve(
         top_k: Số lượng kết quả cuối cùng
         score_threshold: Ngưỡng điểm cosine gốc tối thiểu (KHÔNG phải điểm RRF)
         use_reranking: Có áp dụng reranking hay không
+        use_semantic: Bật nhánh dense retrieval (Task 5)
+        use_lexical: Bật nhánh BM25 (Task 6)
+
+    Ba cờ trên phục vụ so sánh A/B của bài nhóm: hybrid vs dense-only vs
+    sparse-only, và có rerank vs không rerank.
 
     Returns:
         List of {
@@ -125,6 +162,8 @@ def retrieve(
         raise ValueError("top_k phải là số nguyên không âm")
     if not isinstance(score_threshold, Real) or not 0.0 <= score_threshold <= 1.0:
         raise ValueError("score_threshold phải nằm trong [0, 1]")
+    if not use_semantic and not use_lexical:
+        raise ValueError("Phải bật ít nhất một trong semantic / lexical search")
     if top_k == 0:
         return []
 
@@ -132,17 +171,28 @@ def retrieve(
 
     # Step 1: hai retriever độc lập được chạy đồng thời để giảm latency.
     with ThreadPoolExecutor(max_workers=2, thread_name_prefix="retrieval") as executor:
-        dense_future = executor.submit(semantic_search, query, retrieval_k)
-        sparse_future = executor.submit(lexical_search, query, retrieval_k)
-        dense_results = _future_result("Semantic", dense_future)
-        sparse_results = _future_result("Lexical", sparse_future)
+        dense_future = (
+            executor.submit(semantic_search, query, retrieval_k) if use_semantic else None
+        )
+        sparse_future = (
+            executor.submit(lexical_search, query, retrieval_k) if use_lexical else None
+        )
+        dense_results = _future_result("Semantic", dense_future) if dense_future else []
+        sparse_results = _future_result("Lexical", sparse_future) if sparse_future else []
 
     # Step 2: RRF chỉ dùng thứ hạng để fuse; điểm của hai retriever không cùng
     # thang đo nên không cộng trực tiếp cosine với BM25.
-    merged = rerank_rrf(
-        [dense_results, sparse_results],
-        top_k=retrieval_k,
-    )
+    #
+    # Khi RERANK_METHOD="rrf", bước fuse này CHÍNH LÀ reranking. Nên use_reranking=False
+    # phải bỏ luôn RRF, nếu không cờ đó là no-op và phép so sánh A/B "có rerank vs
+    # không rerank" sẽ cho hai kết quả giống hệt nhau.
+    if use_reranking:
+        merged = rerank_rrf([dense_results, sparse_results], top_k=retrieval_k)
+    else:
+        # Baseline không rerank: nối hai danh sách theo thứ hạng gốc của từng
+        # retriever, khử trùng lặp, giữ nguyên điểm gốc (cosine / BM25).
+        merged = _interleave_without_fusion(dense_results, sparse_results, retrieval_k)
+
     for item in merged:
         item["source"] = "hybrid"
 
@@ -162,17 +212,22 @@ def retrieve(
 
     # Step 3/4: quyết định fallback bằng cosine GỐC của dense top-1. Tuyệt đối
     # không dùng merged[0]['score'], vì đó là RRF (~0.016 với k=60).
-    best_dense_score = (
-        float(dense_results[0].get("score", 0.0)) if dense_results else 0.0
-    )
-    if best_dense_score < score_threshold:
-        print(
-            f"[INFO] Dense cosine {best_dense_score:.3f} < "
-            f"threshold {score_threshold:.3f}; trying PageIndex"
+    #
+    # Chỉ xét fallback khi semantic đang bật. Chạy BM25-only thì không có điểm
+    # cosine nào để so — coi như 0.0 sẽ khiến MỌI query rơi xuống PageIndex, làm
+    # hỏng đúng cấu hình sparse-only mà A/B đang muốn đo.
+    if use_semantic:
+        best_dense_score = (
+            float(dense_results[0].get("score", 0.0)) if dense_results else 0.0
         )
-        fallback_results = _pageindex_fallback(query, top_k)
-        if fallback_results:
-            return fallback_results
+        if best_dense_score < score_threshold:
+            print(
+                f"[INFO] Dense cosine {best_dense_score:.3f} < "
+                f"threshold {score_threshold:.3f}; trying PageIndex"
+            )
+            fallback_results = _pageindex_fallback(query, top_k)
+            if fallback_results:
+                return fallback_results
 
     return final_results[:top_k]
 

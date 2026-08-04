@@ -12,6 +12,16 @@ venv/
 # Temp PDF conversion cache
 data/_tmp_pdf/
 
+# Vector store — sinh ra khi chay task4, moi nguoi tu build tren may minh
+chroma_db/
+
+# DeepEval cache + telemetry local
+.deepeval/
+.deepeval-cache.json
+
+# Cau hinh chay app cua Claude Code (may ai nguoi nay)
+.claude/
+
 # Temp / cache
 .pytest_cache/
 *.tmp

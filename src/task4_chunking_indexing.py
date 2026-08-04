@@ -239,6 +239,7 @@ def get_embedding_model():
     model = SentenceTransformer(EMBEDDING_MODEL)
     return model
 
+
 def index_to_vectorstore(chunks: list[dict]) -> int:
     """
     Lưu chunks vào vector store đã chọn.

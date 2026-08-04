@@ -530,10 +530,10 @@ run_dashboard()
 
 #### Deliverable Evaluation
 
-- [ ] File `group_project/evaluation/golden_dataset.json` — 15+ cặp Q&A
-- [ ] File `group_project/evaluation/eval_pipeline.py` — script chạy evaluation
-- [ ] File `group_project/evaluation/results.md` — bảng điểm + phân tích
-- [ ] So sánh A/B ít nhất 2 configs
+- [x] File `group_project/evaluation/golden_dataset.json` — 18 cặp Q&A (yêu cầu 15+)
+- [x] File `group_project/evaluation/eval_pipeline.py` — DeepEval, 4 metric
+- [x] File `group_project/evaluation/results.md` — bảng điểm + worst performers
+- [x] So sánh A/B 4 configs: `hybrid_rerank`, `hybrid_norerank`, `dense_only`, `sparse_only`
 
 ---
 
@@ -549,8 +549,16 @@ run_dashboard()
 
 ### Kiến Trúc Hệ Thống
 
+Sơ đồ đầy đủ (luồng dữ liệu Task 1→10, điểm rẽ nhánh fallback, và hai quyết định
+thiết kế đáng chú ý): [group_project/README.md](group_project/README.md#kiến-trúc-hệ-thống)
+
 ```
-[Vẽ diagram kiến trúc ở đây]
+Task 1,2 (tải PDF + crawl)  →  Task 3 (MarkItDown, bóc HTML)  →  Task 4 (chunk 800/100, bge-m3)  →  chroma_db/
+                                                                                                        │
+  Câu hỏi ─┬─→ Task 5 Semantic (cosine, giữ điểm gốc) ─┐                                                │
+           └─→ Task 6 BM25                            ─┴─→ Task 7 RRF ─→ Task 9 ─→ Task 10 ─→ app.py
+                                                                            │
+                                                    cosine < 0.48 ─────────→ Task 8 PageIndex
 ```
 
 ---
@@ -559,10 +567,12 @@ run_dashboard()
 
 | Thành viên | MSSV | Nhiệm vụ | Trạng thái |
 |-----------|------|----------|------------|
-| | | | |
-| | | | |
-| | | | |
-| | | | |
+| Lê Quang Huy | 2A202601821 | Role 1 — Team Leader & RAG Architect: Task 9, tích hợp, kiến trúc | ✅ |
+| Nguyễn Chí Hướng | 2A202601203 | Role 2 — Data & Retrieval: Task 1–4 | ✅ |
+| Phạm Thị Liên | 2A202601795 | Role 3 — Frontend & Chatbot: Task 5, 8, 10 + `app.py` | ✅ |
+| Nguyễn Tiến Đạt | 2A202601387 | Role 4 — Evaluation & QA: Task 6, 7 + DeepEval | ✅ |
+
+Chi tiết branch, quy tắc sở hữu file và lịch checkpoint: [TEAMMATES.md](TEAMMATES.md)
 
 ---
 

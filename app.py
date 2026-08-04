@@ -85,6 +85,45 @@ with st.sidebar:
     st.subheader("⚙️ Thiết lập")
     top_k = st.slider("Số chunks retrieval (top_k)", 3, 10, 5)
 
+    st.markdown("**Thành phần retrieval**")
+    use_semantic = st.checkbox(
+        "Semantic (dense, Task 5)",
+        value=True,
+        help="Tìm theo ngữ nghĩa bằng vector embedding + cosine similarity.",
+    )
+    use_lexical = st.checkbox(
+        "Lexical BM25 (sparse, Task 6)",
+        value=True,
+        help="Tìm theo từ khoá chính xác — mạnh với mã số, tên riêng.",
+    )
+    use_reranking = st.checkbox(
+        "Reranking (Task 7)",
+        value=True,
+        help=(
+            "RRF gộp thứ hạng từ hai nhánh. Tắt để so sánh A/B "
+            "có rerank vs không rerank."
+        ),
+    )
+
+    if not use_semantic and not use_lexical:
+        st.error("Phải bật ít nhất một trong Semantic hoặc BM25.")
+
+    # Nhãn cấu hình để đối chiếu khi ghi kết quả A/B vào results.md
+    if use_semantic and use_lexical:
+        config_label = "hybrid"
+    elif use_semantic:
+        config_label = "dense-only"
+    else:
+        config_label = "sparse-only"
+    config_label += " + rerank" if use_reranking else " (no rerank)"
+    st.caption(f"Cấu hình hiện tại: `{config_label}`")
+
+    if not use_semantic:
+        st.caption(
+            "⚠️ Tắt Semantic thì không còn điểm cosine để so ngưỡng, "
+            "nên PageIndex fallback cũng không kích hoạt."
+        )
+
     st.divider()
     st.caption("**Kiến trúc hệ thống:**")
     st.caption("Hybrid Retrieval (Semantic + BM25) → RRF Rerank → PageIndex Fallback → LLM Generation có Citation")
@@ -123,6 +162,11 @@ for msg in st.session_state.messages:
 user_input = st.chat_input("Nhập câu hỏi của bạn về chính sách/dịch vụ đại học...")
 query = user_input or st.session_state.pending_query
 
+if query and not use_semantic and not use_lexical:
+    st.session_state.pending_query = None
+    st.warning("Bật lại Semantic hoặc BM25 ở thanh bên trước khi hỏi.")
+    query = None
+
 if query:
     st.session_state.pending_query = None
 
@@ -135,7 +179,13 @@ if query:
     with st.chat_message("assistant"):
         with st.spinner("Đang tìm kiếm tài liệu và tổng hợp câu trả lời..."):
             try:
-                response = generate_with_citation(query, top_k=top_k)
+                response = generate_with_citation(
+                    query,
+                    top_k=top_k,
+                    use_semantic=use_semantic,
+                    use_lexical=use_lexical,
+                    use_reranking=use_reranking,
+                )
                 if not isinstance(response, dict):
                     raise TypeError("generate_with_citation() phải trả về dict")
 

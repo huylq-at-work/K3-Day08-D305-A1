@@ -41,15 +41,14 @@ TOP_P = 0.9
 # Chọn 0.3 vì: RAG cần factual, ít sáng tạo
 TEMPERATURE = 0.3
 
-# TODO: Chọn LLM model (OpenRouter model ID)
-# TODO: Chọn LLM model (OpenRouter model ID)
-# Use inclusionai model with free tier; fallback to other APIs on rate limit
-LLM_MODEL = "inclusionai/ling-3.0-flash:free"  # default free model
+# Model mặc định khi dùng OpenRouter: bản ":free" không tính phí.
+LLM_MODEL = "inclusionai/ling-3.0-flash:free"
 
-# Fallback models (if rate limited)
+# Model thay thế khi bị rate limit (429). Đây là model ID CỦA OPENROUTER, không
+# phải fallback sang provider khác — việc chọn provider nằm ở generate_with_citation().
 FALLBACK_MODELS = [
-    "openai/gpt-4o-mini",  # if OpenAI key available
-    "google/gemini-pro",    # if GEMINI_API_KEY available
+    "openai/gpt-4o-mini",
+    "google/gemini-pro",
 ]
 
 
@@ -106,7 +105,11 @@ def reorder_for_llm(chunks: list[dict]) -> list[dict]:
 def format_context(chunks: list[dict]) -> str:
     """
     Format chunks into a context string for the prompt.
-    Each chunk now uses the top-level 'source' field for citation labeling.
+
+    Tên tài liệu nằm ở metadata['source'] (Task 4 ghi md_file.name vào đó). Field
+    'source' ở cấp ngoài là KÊNH truy xuất do Task 9 gắn ('hybrid' | 'pageindex'),
+    không phải tên nguồn — dùng nó làm nhãn citation thì LLM chỉ thấy "hybrid" ở
+    mọi đoạn, không phân biệt được tài liệu nào, và sẽ từ chối khẳng định.
 
     Args:
         chunks: List of {'content': str, 'metadata': dict, 'score': float, 'source': str}
@@ -116,8 +119,10 @@ def format_context(chunks: list[dict]) -> str:
     """
     context_parts = []
     for i, chunk in enumerate(chunks, 1):
-        source = chunk.get('metadata', {}).get('source', f"Source {i}")
-        doc_type = chunk.get('metadata', {}).get('type', "unknown")
+        # `or {}` thay vì default {} — Task 9 có thể trả metadata=None từ PageIndex.
+        metadata = chunk.get('metadata') or {}
+        source = metadata.get('source') or f"Source {i}"
+        doc_type = metadata.get('type', "unknown")
         context_parts.append(
             f"[Document {i} | Source: {source} | Type: {doc_type}]\n"
             f"{chunk.get('content', '')}\n"
@@ -131,7 +136,64 @@ def format_context(chunks: list[dict]) -> str:
 # GENERATION
 # =============================================================================
 
-def generate_with_citation(query: str, top_k: int = TOP_K) -> dict:
+# Số lần thử lại khi lỗi mạng thoáng qua.
+LLM_MAX_ATTEMPTS = 3
+_TRANSIENT_MARKERS = ("connection", "timeout", "timed out", "temporarily", "502", "503", "504")
+
+
+def _call_llm(api_key: str, base_url: str | None, model_id: str, user_message: str) -> str:
+    """
+    Gọi LLM, thử lại khi gặp lỗi mạng thoáng qua.
+
+    Không có retry thì một lần rớt mạng sẽ biến thành NỘI DUNG câu trả lời
+    ("LLM generation error: Connection error."). Quan sát thực tế: eval chấm
+    Answer Relevancy = 0.000 cho những câu đó, dù retrieval hoàn toàn đúng —
+    tức là một sự cố mạng thoáng qua làm hỏng cả bảng điểm.
+    """
+    import time
+
+    from openai import OpenAI
+
+    client = OpenAI(api_key=api_key, base_url=base_url)
+    last_exc: Exception | None = None
+
+    for attempt in range(1, LLM_MAX_ATTEMPTS + 1):
+        try:
+            response = client.chat.completions.create(
+                model=model_id,
+                messages=[
+                    {"role": "system", "content": SYSTEM_PROMPT},
+                    {"role": "user", "content": user_message},
+                ],
+                temperature=TEMPERATURE,
+                top_p=TOP_P,
+            )
+            return response.choices[0].message.content or ""
+        except Exception as exc:
+            last_exc = exc
+            message = str(exc).lower()
+
+            # Rate limit để vòng ngoài đổi sang model khác, không retry ở đây.
+            if "429" in message or "rate limit" in message:
+                raise
+
+            if not any(m in message for m in _TRANSIENT_MARKERS):
+                raise
+
+            if attempt < LLM_MAX_ATTEMPTS:
+                wait = 2 ** (attempt - 1)
+                print(f"[WARN] LLM lỗi tạm thời ({exc}); thử lại sau {wait}s")
+                time.sleep(wait)
+
+    raise last_exc if last_exc else RuntimeError("LLM call failed")
+
+def generate_with_citation(
+    query: str,
+    top_k: int = TOP_K,
+    use_semantic: bool = True,
+    use_lexical: bool = True,
+    use_reranking: bool = True,
+) -> dict:
     """
     End-to-end RAG generation có citation.
 
@@ -154,7 +216,16 @@ def generate_with_citation(query: str, top_k: int = TOP_K) -> dict:
         }
     """
     try:
-        chunks = retrieve(query, top_k=top_k)
+        chunks = retrieve(
+            query,
+            top_k=top_k,
+            use_semantic=use_semantic,
+            use_lexical=use_lexical,
+            use_reranking=use_reranking,
+        )
+    except ValueError:
+        # Cấu hình sai từ UI (tắt cả hai retriever) — để lộ ra thay vì nuốt.
+        raise
     except Exception:
         chunks = []
 
@@ -172,26 +243,34 @@ def generate_with_citation(query: str, top_k: int = TOP_K) -> dict:
         }
 
     user_message = f"Context:\n{context}\n\n---\n\nQuestion: {query}"
-    api_key = os.getenv("OPENROUTER_API_KEY") or os.getenv("OPENAI_API_KEY")
+
+    # Chọn provider theo key thực sự có. Trước đây base_url luôn trỏ OpenRouter nên
+    # key OpenAI gửi vào đó sẽ bị từ chối xác thực, và danh sách FALLBACK_MODELS
+    # ("openai/...", "google/...") chỉ là model ID của OpenRouter chứ không phải
+    # fallback sang provider khác.
+    openrouter_key = (os.getenv("OPENROUTER_API_KEY") or "").strip()
+    openai_key = (os.getenv("OPENAI_API_KEY") or "").strip()
+
+    if openrouter_key:
+        api_key = openrouter_key
+        base_url = "https://openrouter.ai/api/v1"
+        models_to_try = [LLM_MODEL] + FALLBACK_MODELS
+    elif openai_key:
+        api_key = openai_key
+        base_url = None  # endpoint mặc định của OpenAI
+        # Model ID trên OpenAI không có tiền tố "openai/" như trên OpenRouter.
+        models_to_try = ["gpt-4o-mini"]
+    else:
+        api_key = None
+        base_url = None
+        models_to_try = []
 
     if api_key:
         # Attempt primary model first, then fallbacks on rate limit (429)
-        models_to_try = [LLM_MODEL] + FALLBACK_MODELS
         answer = ""
         for model_id in models_to_try:
             try:
-                from openai import OpenAI
-                client = OpenAI(api_key=api_key, base_url="https://openrouter.ai/api/v1")
-                response = client.chat.completions.create(
-                    model=model_id,
-                    messages=[
-                        {"role": "system", "content": SYSTEM_PROMPT},
-                        {"role": "user", "content": user_message},
-                    ],
-                    temperature=TEMPERATURE,
-                    top_p=TOP_P,
-                )
-                answer = response.choices[0].message.content or ""
+                answer = _call_llm(api_key, base_url, model_id, user_message)
                 # Successful generation, break out of fallback loop
                 break
             except Exception as exc:
