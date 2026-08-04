@@ -106,7 +106,11 @@ def reorder_for_llm(chunks: list[dict]) -> list[dict]:
 def format_context(chunks: list[dict]) -> str:
     """
     Format chunks into a context string for the prompt.
-    Each chunk now uses the top-level 'source' field for citation labeling.
+
+    Tên tài liệu nằm ở metadata['source'] (Task 4 ghi md_file.name vào đó). Field
+    'source' ở cấp ngoài là KÊNH truy xuất do Task 9 gắn ('hybrid' | 'pageindex'),
+    không phải tên nguồn — dùng nó làm nhãn citation thì LLM chỉ thấy "hybrid" ở
+    mọi đoạn, không phân biệt được tài liệu nào, và sẽ từ chối khẳng định.
 
     Args:
         chunks: List of {'content': str, 'metadata': dict, 'score': float, 'source': str}
@@ -116,8 +120,10 @@ def format_context(chunks: list[dict]) -> str:
     """
     context_parts = []
     for i, chunk in enumerate(chunks, 1):
-        source = chunk.get('metadata', {}).get('source', f"Source {i}")
-        doc_type = chunk.get('metadata', {}).get('type', "unknown")
+        # `or {}` thay vì default {} — Task 9 có thể trả metadata=None từ PageIndex.
+        metadata = chunk.get('metadata') or {}
+        source = metadata.get('source') or f"Source {i}"
+        doc_type = metadata.get('type', "unknown")
         context_parts.append(
             f"[Document {i} | Source: {source} | Type: {doc_type}]\n"
             f"{chunk.get('content', '')}\n"
@@ -172,16 +178,35 @@ def generate_with_citation(query: str, top_k: int = TOP_K) -> dict:
         }
 
     user_message = f"Context:\n{context}\n\n---\n\nQuestion: {query}"
-    api_key = os.getenv("OPENROUTER_API_KEY") or os.getenv("OPENAI_API_KEY")
+
+    # Chọn provider theo key thực sự có. Trước đây base_url luôn trỏ OpenRouter nên
+    # key OpenAI gửi vào đó sẽ bị từ chối xác thực, và danh sách FALLBACK_MODELS
+    # ("openai/...", "google/...") chỉ là model ID của OpenRouter chứ không phải
+    # fallback sang provider khác.
+    openrouter_key = (os.getenv("OPENROUTER_API_KEY") or "").strip()
+    openai_key = (os.getenv("OPENAI_API_KEY") or "").strip()
+
+    if openrouter_key:
+        api_key = openrouter_key
+        base_url = "https://openrouter.ai/api/v1"
+        models_to_try = [LLM_MODEL] + FALLBACK_MODELS
+    elif openai_key:
+        api_key = openai_key
+        base_url = None  # endpoint mặc định của OpenAI
+        # Model ID trên OpenAI không có tiền tố "openai/" như trên OpenRouter.
+        models_to_try = ["gpt-4o-mini"]
+    else:
+        api_key = None
+        base_url = None
+        models_to_try = []
 
     if api_key:
         # Attempt primary model first, then fallbacks on rate limit (429)
-        models_to_try = [LLM_MODEL] + FALLBACK_MODELS
         answer = ""
         for model_id in models_to_try:
             try:
                 from openai import OpenAI
-                client = OpenAI(api_key=api_key, base_url="https://openrouter.ai/api/v1")
+                client = OpenAI(api_key=api_key, base_url=base_url)
                 response = client.chat.completions.create(
                     model=model_id,
                     messages=[
